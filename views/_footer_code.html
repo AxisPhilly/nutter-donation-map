@@ -1,0 +1,112 @@
+<!-- Libraries -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js" type="text/javascript"></script>
+<% if(env === 'production') { %>
+  <script type="text/javascript" src="js/app.libraries.min.<%= version %>.js"></script>
+<% } else { %>
+  <script type="text/javascript" src="js/lib/underscore.js"></script>
+  <script type="text/javascript" src="js/lib/leaflet.js"></script>
+  <script type="text/javascript" src="js/lib/wax.leaf.js"></script>
+  <script type="text/javascript" src="js/lib/foundation.js"></script>
+  <script type="text/javascript" src="js/lib/foundation.reveal.js"></script>
+  <script type="text/javascript" src="js/lib/fastclick.js"></script>
+<% } %>
+
+<!-- Init Foundation and Fast Click-->
+<script type="text/javascript">
+  $(document).ready(function(){
+    $(document).foundation();
+    FastClick.attach(document.body);
+  });
+</script>
+
+<!-- App Code -->
+<% if(env === 'production') { %>
+  <script type="text/javascript" src="js/app.min.<%= version %>.js"></script>
+<% } else { %>
+  <script type="text/javascript" src="js/app.js"></script>
+<% } %>
+<script type="text/javascript">
+  // Default settings. Zoom and center overridden by URL params, if they exist
+  app.opts = {
+    mapContainer: 'map',
+    tileURL: 'http://api.tiles.mapbox.com/v3/axisphilly.map-5rf31e6p.jsonp',
+    mapOptions: {
+      center: [39.99, -75.150],
+      zoom: 12,
+      minZoom: 11,
+      maxZoom: 18,
+      maxBounds: [
+        [39.69, -76.20],
+        [40.60, -74.14]
+      ],
+      zoomControl: false, // readded to the topright corner
+      urlPosition: true // updates url with center/x/y
+    }
+  }
+
+  // Kick off map
+  app.initMap(function() {
+    // Button events
+    $('.find-user').click(function(event){
+      event.preventDefault();
+
+      $(this).find('img').attr('src', 'img/loading.gif');
+
+      app.getLocation(function(position){
+        app.addMarker(position.coords.latitude, position.coords.longitude);
+
+        $('.find-user').find('img').attr('src', 'img/marker.png');
+      });
+    });
+
+    // Once a geocode request is back and processed,
+    // this function is called for clean up
+    app.geocodeDoneCallback = function() {
+      $('.search').find('img').attr('src', 'img/search.png');
+    }
+
+    $('.search.top button').click(function(event){
+      event.preventDefault();
+
+      $(this).find('img').attr('src', 'img/loading.gif');
+      var address = $('.search').find('input').val();
+
+      app.geocodeRequest(address);
+    });
+
+    $('.search.bottom button').click(function(event){
+      event.preventDefault();
+
+      $(this).find('img').attr('src', 'img/loading.gif');
+      var address = $('.search.bottom').find('input').val();
+
+      app.geocodeRequest(address);
+    });
+
+    $('.info').click(function(event){
+      event.preventDefault();
+
+      $('#infoModal').foundation('reveal', 'open');
+    });
+
+    $('.embed').click(function(event){
+        event.preventDefault();
+        var urlParts = document.URL.split('#'),
+            location = urlParts[1] || '',
+            embedUrl = 'http://apps.axisphilly.org/<%= name %>/embed.html#' + location;
+
+      $('#embedModal code').html('<code>&lt;iframe width="600" height="600" src="' + embedUrl + '" frameborder="0"></iframe></code>');
+      $('#embedModal').foundation('reveal', 'open');
+    });
+  });
+</script>
+<!-- modals -->
+<div id="embedModal" class="reveal-modal">
+  <p>Embed this map on your site by copying and pasting the following code into an article or post:</p>
+  <code><script type="text/javascript">window.location</script></code>
+  <a class="close-reveal-modal">&#215;</a>
+</div>
+<div class="description reveal-modal" id="infoModal">
+  <% include _description.html %>
+  <a class="close-reveal-modal">&#215;</a>
+</div>
