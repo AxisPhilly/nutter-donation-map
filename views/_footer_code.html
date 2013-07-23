@@ -45,23 +45,34 @@
 
   // Kick off map
   app.initMap(function() {
+
+    // TODO Lots of opportunity for cleanup here...
     // Setup layers
     app.layers = {};
-    app.layers.donations_2010 = L.mapbox.tileLayer('axisphilly.nutter-2010')
-    app.layers.donations_2007 = L.mapbox.tileLayer('axisphilly.nutter-2007')
+    app.layers.donations_2010 = {};
+    app.layers.donations_2007 = {};
+    app.layers.donations_2010.layer = L.mapbox.tileLayer('axisphilly.nutter-2010-tiny');
+    app.layers.donations_2007.layer = L.mapbox.tileLayer('axisphilly.nutter-2007-tiny');
+    app.layers.donations_2010.grid = L.mapbox.gridLayer('axisphilly.nutter-2010-tiny');
+    app.layers.donations_2007.grid = L.mapbox.gridLayer('axisphilly.nutter-2007-tiny');
     
-    // Add 2007 be default
-    app.layers.donations_2007.addTo(app.map)
+    // Add 2007 as default
+    app.layers.donations_2007.layer.addTo(app.map)
+    app.map.addLayer(app.layers.donations_2007.grid);
+    app.map.addControl(L.mapbox.gridControl(app.layers.donations_2007.grid, { follow: true }));
 
     // Toggle between donation layers
     app.toggleLayers = function(layerInfo) {
-      app.map.removeLayer(app.layers.donations_2007);
-      app.map.removeLayer(app.layers.donations_2010);
+      app.map.removeLayer(app.layers.donations_2007.layer);
+      app.map.removeLayer(app.layers.donations_2010.layer);
+      app.map.removeLayer(app.layers.donations_2007.grid);
+      app.map.removeLayer(app.layers.donations_2010.grid);
 
-      var layer = app.layers[layerInfo.slug];
+      var current = app.layers[layerInfo.slug];
+      app.map.addLayer(current.grid);
+      app.map.addControl(L.mapbox.gridControl(current.grid, { follow: true }));
       
-      app.map.setView([layerInfo.lat, layerInfo.lon], layerInfo.zoom);
-      layer.addTo(app.map);
+      current.layer.addTo(app.map);
     }
 
     // Layer toggle event
