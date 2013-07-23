@@ -32,7 +32,7 @@
     mapOptions: {
       center: [39.99, -75.150],
       zoom: 12,
-      minZoom: 11,
+      minZoom: 10,
       maxZoom: 14,
       maxBounds: [
         [39.69, -76.20],
@@ -45,27 +45,31 @@
 
   // Kick off map
   app.initMap(function() {
-    // Add donation layers
+    // Setup layers
     app.layers = {};
     app.layers.donations_2010 = L.mapbox.tileLayer('axisphilly.nutter-2010')
     app.layers.donations_2007 = L.mapbox.tileLayer('axisphilly.nutter-2007')
+    
+    // Add 2007 be default
+    app.layers.donations_2007.addTo(app.map)
 
+    // Toggle between donation layers
     app.toggleLayers = function(layerInfo) {
       app.map.removeLayer(app.layers.donations_2007);
       app.map.removeLayer(app.layers.donations_2010);
 
       var layer = app.layers[layerInfo.slug];
-
-      // TODO
-      // - Use layerInfo attributes to zoom and center map
-      // - Set class of clicked '#layer-toggle a' to 'active'
-
+      
+      app.map.setView([layerInfo.lat, layerInfo.lon], layerInfo.zoom);
       layer.addTo(app.map);
     }
 
+    // Layer toggle event
     $('#layer-toggle a').click(function(event) {
       event.preventDefault();
 
+      $('.active').removeClass('active')
+      $(this).addClass('active');
       app.toggleLayers($(this).data());
     });
 
