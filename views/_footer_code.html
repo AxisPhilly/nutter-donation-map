@@ -4,8 +4,7 @@
   <script type="text/javascript" src="js/app.libraries.min.<%= version %>.js"></script>
 <% } else { %>
   <script type="text/javascript" src="js/lib/underscore.js"></script>
-  <script type="text/javascript" src="js/lib/leaflet.js"></script>
-  <script type="text/javascript" src="js/lib/wax.leaf.js"></script>
+  <script type="text/javascript" src="js/lib/mapbox.js"></script>
   <script type="text/javascript" src="js/lib/foundation.js"></script>
   <script type="text/javascript" src="js/lib/foundation.reveal.js"></script>
   <script type="text/javascript" src="js/lib/fastclick.js"></script>
@@ -29,12 +28,12 @@
   // Default settings. Zoom and center overridden by URL params, if they exist
   app.opts = {
     mapContainer: 'map',
-    tileURL: 'http://api.tiles.mapbox.com/v3/axisphilly.map-5rf31e6p.jsonp',
+    tiles: 'axisphilly.map-l64uxk91',
     mapOptions: {
       center: [39.99, -75.150],
       zoom: 12,
       minZoom: 11,
-      maxZoom: 18,
+      maxZoom: 14,
       maxBounds: [
         [39.69, -76.20],
         [40.60, -74.14]
@@ -46,6 +45,26 @@
 
   // Kick off map
   app.initMap(function() {
+    // Add donation layers
+    app.layers = {};
+    app.layers.donations_2007 = L.mapbox.tileLayer('axisphilly.nutter-2010')
+    app.layers.donations_2007 = L.mapbox.tileLayer('axisphilly.nutter-2007')
+
+    app.toggleLayers = function(layerInfo) {
+      app.map.removeLayer(app.layers.donations_2007);
+      app.map.removeLayer(app.layers.donations_2010);
+
+      var layer = app.layers[layerInfo.slug];
+
+      layer.addTo(app.map);
+    }
+
+    $('#layer-toggle a').click(function(event) {
+      event.preventDefault();
+
+      app.toggleLayers($(this).data());
+    });
+
     // Button events
     $('.find-user').click(function(event){
       event.preventDefault();
