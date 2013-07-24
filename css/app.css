@@ -219,7 +219,7 @@ html, body, #map {
   position: absolute;
   width: 120px;
   left: 12px;
-  top: 360px; }
+  top: 400px; }
   @media (max-width: 960px) {
     .layers {
       top: 80px;
