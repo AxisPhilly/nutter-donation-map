@@ -222,7 +222,12 @@ html, body, #map {
   top: 360px; }
   @media (max-width: 960px) {
     .layers {
-      top: 80px; } }
+      top: 80px;
+      left: 8px; } }
+  @media (max-width: 360px) {
+    .layers {
+      top: 65px;
+      left: 5px; } }
   .layers a {
     width: 113px;
     float: left;
@@ -232,6 +237,10 @@ html, body, #map {
     border-left: 5px solid #444;
     background: white;
     color: #333; }
+    @media (max-width: 360px) {
+      .layers a {
+        font-size: 12px;
+        width: 85px; } }
     .layers a:hover, .layers a.active {
       border-left: 5px solid #fdd441;
       background: #00a4da;
