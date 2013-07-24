@@ -242,7 +242,7 @@ html, body, #map {
         font-size: 12px;
         width: 85px; } }
     .layers a:hover, .layers a.active {
-      border-left: 5px solid #fdd441;
+      border-left: 5px solid #333;
       background: #00a4da;
       color: white; }
 
